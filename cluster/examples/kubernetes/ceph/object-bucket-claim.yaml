@@ -1,0 +1,10 @@
+---
+kind: ObjectBucketClaim
+apiVersion: ceph.rook.io/v1beta1
+metadata:
+  name: my-bucket-claim
+  namespace: rook-ceph
+spec:
+  objectUser: "my-user"
+  bucketName: "my-bucket"
+  #generateBucketName:
