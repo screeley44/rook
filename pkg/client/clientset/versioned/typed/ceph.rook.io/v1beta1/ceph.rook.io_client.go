@@ -29,6 +29,7 @@ type CephV1beta1Interface interface {
 	RESTClient() rest.Interface
 	ClustersGetter
 	FilesystemsGetter
+	ObjectBucketsGetter
 	ObjectStoresGetter
 	ObjectStoreUsersGetter
 	PoolsGetter
@@ -45,6 +46,10 @@ func (c *CephV1beta1Client) Clusters(namespace string) ClusterInterface {
 
 func (c *CephV1beta1Client) Filesystems(namespace string) FilesystemInterface {
 	return newFilesystems(c, namespace)
+}
+
+func (c *CephV1beta1Client) ObjectBuckets(namespace string) ObjectBucketInterface {
+	return newObjectBuckets(c, namespace)
 }
 
 func (c *CephV1beta1Client) ObjectStores(namespace string) ObjectStoreInterface {

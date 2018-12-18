@@ -37,10 +37,10 @@ type Interface interface {
 	CassandraV1alpha1() cassandrav1alpha1.CassandraV1alpha1Interface
 	// Deprecated: please explicitly pick a version if possible.
 	Cassandra() cassandrav1alpha1.CassandraV1alpha1Interface
-	CephV1beta1() cephv1beta1.CephV1beta1Interface
 	CephV1() cephv1.CephV1Interface
 	// Deprecated: please explicitly pick a version if possible.
 	Ceph() cephv1.CephV1Interface
+	CephV1beta1() cephv1beta1.CephV1beta1Interface
 	CockroachdbV1alpha1() cockroachdbv1alpha1.CockroachdbV1alpha1Interface
 	// Deprecated: please explicitly pick a version if possible.
 	Cockroachdb() cockroachdbv1alpha1.CockroachdbV1alpha1Interface
@@ -63,8 +63,8 @@ type Interface interface {
 type Clientset struct {
 	*discovery.DiscoveryClient
 	cassandraV1alpha1   *cassandrav1alpha1.CassandraV1alpha1Client
-	cephV1beta1         *cephv1beta1.CephV1beta1Client
 	cephV1              *cephv1.CephV1Client
+	cephV1beta1         *cephv1beta1.CephV1beta1Client
 	cockroachdbV1alpha1 *cockroachdbv1alpha1.CockroachdbV1alpha1Client
 	edgefsV1alpha1      *edgefsv1alpha1.EdgefsV1alpha1Client
 	minioV1alpha1       *miniov1alpha1.MinioV1alpha1Client
@@ -83,11 +83,6 @@ func (c *Clientset) Cassandra() cassandrav1alpha1.CassandraV1alpha1Interface {
 	return c.cassandraV1alpha1
 }
 
-// CephV1beta1 retrieves the CephV1beta1Client
-func (c *Clientset) CephV1beta1() cephv1beta1.CephV1beta1Interface {
-	return c.cephV1beta1
-}
-
 // CephV1 retrieves the CephV1Client
 func (c *Clientset) CephV1() cephv1.CephV1Interface {
 	return c.cephV1
@@ -97,6 +92,11 @@ func (c *Clientset) CephV1() cephv1.CephV1Interface {
 // Please explicitly pick a version.
 func (c *Clientset) Ceph() cephv1.CephV1Interface {
 	return c.cephV1
+}
+
+// CephV1beta1 retrieves the CephV1beta1Client
+func (c *Clientset) CephV1beta1() cephv1beta1.CephV1beta1Interface {
+	return c.cephV1beta1
 }
 
 // CockroachdbV1alpha1 retrieves the CockroachdbV1alpha1Client
@@ -174,11 +174,11 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
-	cs.cephV1beta1, err = cephv1beta1.NewForConfig(&configShallowCopy)
+	cs.cephV1, err = cephv1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
-	cs.cephV1, err = cephv1.NewForConfig(&configShallowCopy)
+	cs.cephV1beta1, err = cephv1beta1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -215,8 +215,8 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.cassandraV1alpha1 = cassandrav1alpha1.NewForConfigOrDie(c)
-	cs.cephV1beta1 = cephv1beta1.NewForConfigOrDie(c)
 	cs.cephV1 = cephv1.NewForConfigOrDie(c)
+	cs.cephV1beta1 = cephv1beta1.NewForConfigOrDie(c)
 	cs.cockroachdbV1alpha1 = cockroachdbv1alpha1.NewForConfigOrDie(c)
 	cs.edgefsV1alpha1 = edgefsv1alpha1.NewForConfigOrDie(c)
 	cs.minioV1alpha1 = miniov1alpha1.NewForConfigOrDie(c)
@@ -231,8 +231,8 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.cassandraV1alpha1 = cassandrav1alpha1.New(c)
-	cs.cephV1beta1 = cephv1beta1.New(c)
 	cs.cephV1 = cephv1.New(c)
+	cs.cephV1beta1 = cephv1beta1.New(c)
 	cs.cockroachdbV1alpha1 = cockroachdbv1alpha1.New(c)
 	cs.edgefsV1alpha1 = edgefsv1alpha1.New(c)
 	cs.minioV1alpha1 = miniov1alpha1.New(c)

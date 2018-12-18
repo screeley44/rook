@@ -36,6 +36,10 @@ func (c *FakeCephV1beta1) Filesystems(namespace string) v1beta1.FilesystemInterf
 	return &FakeFilesystems{c, namespace}
 }
 
+func (c *FakeCephV1beta1) ObjectBuckets(namespace string) v1beta1.ObjectBucketInterface {
+	return &FakeObjectBuckets{c, namespace}
+}
+
 func (c *FakeCephV1beta1) ObjectStores(namespace string) v1beta1.ObjectStoreInterface {
 	return &FakeObjectStores{c, namespace}
 }

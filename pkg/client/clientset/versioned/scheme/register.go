@@ -58,8 +58,8 @@ func init() {
 // correctly.
 func AddToScheme(scheme *runtime.Scheme) {
 	cassandrav1alpha1.AddToScheme(scheme)
-	cephv1beta1.AddToScheme(scheme)
 	cephv1.AddToScheme(scheme)
+	cephv1beta1.AddToScheme(scheme)
 	cockroachdbv1alpha1.AddToScheme(scheme)
 	edgefsv1alpha1.AddToScheme(scheme)
 	miniov1alpha1.AddToScheme(scheme)

@@ -34,6 +34,14 @@ type FilesystemListerExpansion interface{}
 // FilesystemNamespaceLister.
 type FilesystemNamespaceListerExpansion interface{}
 
+// ObjectBucketListerExpansion allows custom methods to be added to
+// ObjectBucketLister.
+type ObjectBucketListerExpansion interface{}
+
+// ObjectBucketNamespaceListerExpansion allows custom methods to be added to
+// ObjectBucketNamespaceLister.
+type ObjectBucketNamespaceListerExpansion interface{}
+
 // ObjectStoreListerExpansion allows custom methods to be added to
 // ObjectStoreLister.
 type ObjectStoreListerExpansion interface{}

@@ -28,6 +28,8 @@ type Interface interface {
 	Clusters() ClusterInformer
 	// Filesystems returns a FilesystemInformer.
 	Filesystems() FilesystemInformer
+	// ObjectBuckets returns a ObjectBucketInformer.
+	ObjectBuckets() ObjectBucketInformer
 	// ObjectStores returns a ObjectStoreInformer.
 	ObjectStores() ObjectStoreInformer
 	// ObjectStoreUsers returns a ObjectStoreUserInformer.
@@ -55,6 +57,11 @@ func (v *version) Clusters() ClusterInformer {
 // Filesystems returns a FilesystemInformer.
 func (v *version) Filesystems() FilesystemInformer {
 	return &filesystemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// ObjectBuckets returns a ObjectBucketInformer.
+func (v *version) ObjectBuckets() ObjectBucketInformer {
+	return &objectBucketInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ObjectStores returns a ObjectStoreInformer.

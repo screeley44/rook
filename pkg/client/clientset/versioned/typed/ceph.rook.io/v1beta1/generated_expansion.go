@@ -22,6 +22,8 @@ type ClusterExpansion interface{}
 
 type FilesystemExpansion interface{}
 
+type ObjectBucketExpansion interface{}
+
 type ObjectStoreExpansion interface{}
 
 type ObjectStoreUserExpansion interface{}
