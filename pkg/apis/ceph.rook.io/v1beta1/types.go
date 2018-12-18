@@ -297,47 +297,47 @@ type GatewaySpec struct {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ObjectBucketClaim represents a bucket in an object store
-type ObjectBucketClaim struct {
+// ObjectBucket represents a bucket in an object store
+type ObjectBucket struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
-	Spec              ObjectBucketClaimSpec   `json:"spec"`
-	Status            ObjectBucketClaimStatus `json:"status"`
+	Spec              ObjectBucketSpec   `json:"spec"`
+	Status            ObjectBucketStatus `json:"status"`
 }
 
-// ObjectBucketClaimSpec represents the body of an ObjectBucketClaim
-type ObjectBucketClaimSpec struct {
+// ObjectBucketSpec represents the body of an ObjectBucket
+type ObjectBucketSpec struct {
 	BucketName         string `json:"bucketName,omitempty"`
 	GenerateBucketName string `json:"generateBucketName,omitempty"`
 	ObjectUser         string `json:"rookObjectUser"`
 }
 
-// ObjectBucketClaimPhase represents the possible phases of an ObjectBucketClaim
-type ObjectBucketClaimPhase string
+// ObjectBucketPhase represents the possible phases of an ObjectBucket
+type ObjectBucketPhase string
 
 const (
-	// ObjectBucketClaimPhaseCreating indicates that the operator is processing a new ObjectBucketClaim API object
-	// Until the criteria of ObjectBucketClaimPhaseAvailable has been met, the ObjectBucketClaim is considered
+	// ObjectBucketPhaseCreating indicates that the operator is processing a new ObjectBucket API object
+	// Until the criteria of ObjectBucketPhaseAvailable has been met, the ObjectBucket is considered
 	// "pending"
-	ObjectBucketClaimPhaseCreating ObjectBucketClaimPhase = "pending"
+	ObjectBucketPhaseCreating ObjectBucketPhase = "pending"
 
-	// ObjectBucketClaimPhaseAvailable indicates that the operator has finished processing a new ObjectBucketClaim
+	// ObjectBucketPhaseAvailable indicates that the operator has finished processing a new ObjectBucket
 	// API object and the bucket is ready for consumption
 	// The criteria for this phase is
 	// - the bucket has been created in the object store
 	// - the bucket data has been written to a the bucket ConfigMap in the respective namespace
-	ObjectBucketClaimPhaseAvailable ObjectBucketClaimPhase = "available"
+	ObjectBucketPhaseAvailable ObjectBucketPhase = "available"
 )
 
-type ObjectBucketClaimStatus struct {
-	Phase      ObjectBucketClaimPhase `json:"phase,string,omitempty"`
+type ObjectBucketStatus struct {
+	Phase      ObjectBucketPhase `json:"phase,string,omitempty"`
 	BucketHost string                 `json:"bucketHost,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type ObjectBucketClaimList struct {
+type ObjectBucketList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
-	Items           []ObjectBucketClaim `json:"items"`
+	Items           []ObjectBucket `json:"items"`
 }
