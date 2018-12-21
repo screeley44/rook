@@ -1,8 +1,8 @@
 ---
-kind: ObjectBucketClaim
+kind: CephObjectBucket
 apiVersion: ceph.rook.io/v1beta1
 metadata:
-  name: my-bucket-claim
+  name: my-object-bucket
   namespace: rook-ceph
 spec:
   objectUser: "my-user"
