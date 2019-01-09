@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	// "github.com/aws/aws-sdk-go/aws"
+	// "github.com/aws/aws-sdk-go/aws/credentials"
+	// "github.com/aws/aws-sdk-go/aws/session"
+	// "github.com/aws/aws-sdk-go/service/s3"
 
 	"github.com/coreos/pkg/capnslog"
 	opkit "github.com/rook/operator-kit"
@@ -32,7 +32,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
-	v12 "k8s.io/client-go/listers/core/v1"
+	listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 
 	"k8s.io/client-go/informers"
@@ -43,7 +43,11 @@ import (
 	"github.com/rook/rook/pkg/clusterd"
 )
 
-const rookCephPrefix string = "rook-ceph-object-bucket-"
+const (
+	rookCephPrefix string = "rook-ceph-object-bucket-"
+	accessKey      string = "AccessKey"
+	secretKey      string = "SecretKey"
+)
 
 // ObjectBucketResource represent the object store user custom resource for the watcher
 var ObjectBucketResource = opkit.CustomResource{
@@ -62,7 +66,7 @@ type Controller struct {
 	context      *clusterd.Context
 	ownerRef     metav1.OwnerReference
 	bucketLister obListerv1beta1.ObjectBucketLister
-	secretLister v12.SecretLister
+	secretLister listers.SecretLister
 }
 
 // NewObjectBucketController create controller for watching object bucket custom resources
@@ -95,7 +99,7 @@ func (c *Controller) StartWatch(stopCh <-chan struct{}) {
 }
 
 func (c *Controller) onAdd(obj interface{}) {
-	objectBucket, err := c.getObjectBucketResource(obj)
+	objectBucket, err := getObjectBucketResource(obj)
 	if err != nil {
 		logger.Errorf("failed to get objectbucket resource: %v", err)
 		return
@@ -111,20 +115,24 @@ func (c *Controller) onDelete(obj interface{}) {
 	// TODO
 }
 
+type cephUser struct {
+	name, accessKey, secretKey string
+}
+
 func (c *Controller) handleAdd(ob *cephv1beta1.ObjectBucket) {
-	// get bucket owner
-	user, err := c.getObjectBucketUserFromBucket(ob)
+	var err error
+	// get user and credentials
+	user, err := c.newCephUserFromObjectBucket(ob)
 	if err != nil {
-		logger.Errorf("could not get bucket owner: %v", err)
+		logger.Errorf("failed to retrieve ceph user: %v", err)
 		return
 	}
-	// get secret by labels.user
-	secret, err := c.getObjectBucketUserSecret(user, ob.Namespace)
-	if err != nil {
-		logger.Errorf("could not get secret via object user: %v", err)
-		return
-	}
-	// rgw create bucket with user/creds
+
+	// DEBUG
+	logger.Infof("=== DEBUG === %T\n%v", user, user)
+
+	// s3-sdk create bucket with user/creds
+	//createCephBucket(user, ob.Name)
 
 	// create configMap
 }
@@ -137,7 +145,7 @@ func (c *Controller) handleDelete(ob *cephv1beta1.ObjectBucket) {
 	// TODO
 }
 
-func (c *Controller) getObjectBucketResource(obj interface{}) (*cephv1beta1.ObjectBucket, error) {
+func getObjectBucketResource(obj interface{}) (*cephv1beta1.ObjectBucket, error) {
 	var ok bool
 	objectBucket, ok := obj.(cephv1beta1.ObjectBucket)
 	if ok {
@@ -146,12 +154,39 @@ func (c *Controller) getObjectBucketResource(obj interface{}) (*cephv1beta1.Obje
 	return nil, fmt.Errorf("obj does not match ObjectBucket type")
 }
 
+func (c *Controller) newCephUserFromObjectBucket(ob *cephv1beta1.ObjectBucket) (*cephUser, error) {
+	var err error
+	cu := &cephUser{}
+
+	if cu.name, err = c.getObjectBucketUserFromBucket(ob); err != nil {
+		return nil, fmt.Errorf("failed getting user name, %v", err)
+	}
+	if cu.accessKey, cu.secretKey, err = c.getObectBucketUserCredentials(ob); err != nil {
+		return nil, fmt.Errorf("failed getting user keys: %v", err)
+	}
+	return cu, nil
+}
+
 func (c *Controller) getObjectBucketUserFromBucket(ob *cephv1beta1.ObjectBucket) (string, error) {
 	user := ob.Spec.ObjectUser
 	if user == "" {
 		return "", fmt.Errorf("ObjectUser is empty, required")
 	}
 	return user, nil
+}
+
+func (c *Controller) getObectBucketUserCredentials(ob *cephv1beta1.ObjectBucket) (string, string, error) {
+	secret, err := c.getObjectBucketUserSecret(ob.Name, ob.Namespace)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to get user credentials")
+	}
+	if len(secret.Data[accessKey]) == 0 {
+		return "", "", fmt.Errorf("failed to get AccessKey, secret.data.AccessKey is empty")
+	}
+	if len(secret.Data[secretKey]) == 0 {
+		return "", "", fmt.Errorf("failed to get SecretKey, secret.data.SecretKey is empty")
+	}
+	return fmt.Sprintf("%s", secret.Data[accessKey]), fmt.Sprintf("%s", secret.Data[secretKey]), nil
 }
 
 func (c *Controller) getObjectBucketUserSecret(user, namespace string) (*v1.Secret, error) {
@@ -171,32 +206,36 @@ func (c *Controller) getObjectBucketUserSecret(user, namespace string) (*v1.Secr
 	return secretList[0], nil
 }
 
-// TODO
-func (c *Controller) newBucketConfigResource(ob *cephv1beta1.ObjectBucket) (*v1.ConfigMap, error) {
-	config := &v1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: rookCephPrefix + ob.Name,
-		},
-		Data: map[string]string{
-			"BUCKET_HOST": "",
-			"BUCKET_PORT": "",
-			"BUCKET_NAME": "",
-			"BUCKET_SSL":  "",
-		},
-	}
-	return c.context.Clientset.CoreV1().ConfigMaps(ob.Namespace).Create(config)
-}
-
-func (c *Controller) createCephBucket(id, secret, bucketName string) {
-	// s3Client := newS3ClientFromCreds(id, secret)
-	// output, err := s3Client.CreateBucket(&s3.CreateBucketInput{
-	//
-	// })
-}
-
-func newS3ClientFromCreds(id, secret string) *s3.S3 {
-	sess := session.Must(session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(id, secret, ""),
-	}))
-	return s3.New(sess, aws.NewConfig())
-}
+// func createCephBucket(user *cephUser, bucketName string) error {
+// 	s3Client := newS3ClientFromCreds(user.accessKey, user.secretKey)
+// 	output, err := s3Client.CreateBucket(&s3.CreateBucketInput{
+// 		Bucket: &bucketName,
+// 	})
+// 	logger.Infof("bucket creation output: %v", output)
+// 	if err != nil {
+// 		return fmt.Errorf("failed creating bucket %q", bucketName, err)
+// 	}
+// 	return nil
+// }
+//
+// func newS3ClientFromCreds(id, secret string) *s3.S3 {
+// 	sess := session.Must(session.NewSession(&aws.Config{
+// 		Credentials: credentials.NewStaticCredentials(id, secret, ""),
+// 	}))
+// 	return s3.New(sess, aws.NewConfig())
+// }
+//
+// // TODO
+// func newCephBucketConfigMap(ob *cephv1beta1.ObjectBucket) *v1.ConfigMap {
+// 	return &v1.ConfigMap{
+// 		ObjectMeta: metav1.ObjectMeta{
+// 			Name: rookCephPrefix + ob.Name,
+// 		},
+// 		Data: map[string]string{
+// 			"BUCKET_HOST": "",
+// 			"BUCKET_PORT": "",
+// 			"BUCKET_NAME": "",
+// 			"BUCKET_SSL":  "",
+// 		},
+// 	}
+// }

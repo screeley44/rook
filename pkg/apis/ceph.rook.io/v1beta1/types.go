@@ -265,9 +265,9 @@ type ObjectStoreUserList struct {
 
 // ObjectStoreUserSpec represent the spec of an Objectstoreuser
 type ObjectStoreUserSpec struct {
-	//The store the user will be created in
+	// The store the user will be created in
 	Store string `json:"store,omitempty"`
-	//The display name for the ceph users
+	// The display name for the ceph users
 	DisplayName string `json:"displayName,omitempty"`
 }
 
@@ -331,7 +331,7 @@ const (
 
 type ObjectBucketStatus struct {
 	Phase      ObjectBucketPhase `json:"phase,string,omitempty"`
-	BucketHost string                 `json:"bucketHost,omitempty"`
+	BucketHost string            `json:"bucketHost,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
