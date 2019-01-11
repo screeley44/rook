@@ -141,9 +141,6 @@ spec:
     listKind: CephObjectBucketList
     plural: cephobjectbuckets
     singular: cephobjectbucket
-    shortNames:
-    - cob
-    - cobs
   scope: Namespaced
   version: v1beta1
 ---
