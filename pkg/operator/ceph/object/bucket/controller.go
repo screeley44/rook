@@ -52,7 +52,7 @@ const (
 // ObjectBucketResource represent the object store user custom resource for the watcher
 var ObjectBucketResource = opkit.CustomResource{
 	Name:    "cephobjectbucket",
-	Plural:  "cephobjectbucket",
+	Plural:  "cephobjectbuckets",
 	Group:   cephv1beta1.CustomResourceGroup,
 	Version: cephv1beta1.Version,
 	Scope:   apiextensionsv1beta1.NamespaceScoped,
