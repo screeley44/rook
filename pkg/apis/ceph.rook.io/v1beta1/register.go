@@ -63,8 +63,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&ObjectStoreList{},
 		&ObjectStoreUser{},
 		&ObjectStoreUserList{},
-		&ObjectBucket{},
-		&ObjectBucketList{},
+		&CephObjectBucket{},
+		&CephObjectBucketList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

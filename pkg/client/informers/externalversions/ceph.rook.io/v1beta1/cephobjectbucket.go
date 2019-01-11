@@ -31,59 +31,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// ObjectBucketInformer provides access to a shared informer and lister for
-// ObjectBuckets.
-type ObjectBucketInformer interface {
+// CephObjectBucketInformer provides access to a shared informer and lister for
+// CephObjectBuckets.
+type CephObjectBucketInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1beta1.ObjectBucketLister
+	Lister() v1beta1.CephObjectBucketLister
 }
 
-type objectBucketInformer struct {
+type cephObjectBucketInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewObjectBucketInformer constructs a new informer for ObjectBucket type.
+// NewCephObjectBucketInformer constructs a new informer for CephObjectBucket type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewObjectBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredObjectBucketInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewCephObjectBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredCephObjectBucketInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredObjectBucketInformer constructs a new informer for ObjectBucket type.
+// NewFilteredCephObjectBucketInformer constructs a new informer for CephObjectBucket type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredObjectBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredCephObjectBucketInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.CephV1beta1().ObjectBuckets(namespace).List(options)
+				return client.CephV1beta1().CephObjectBuckets(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.CephV1beta1().ObjectBuckets(namespace).Watch(options)
+				return client.CephV1beta1().CephObjectBuckets(namespace).Watch(options)
 			},
 		},
-		&cephrookiov1beta1.ObjectBucket{},
+		&cephrookiov1beta1.CephObjectBucket{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *objectBucketInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredObjectBucketInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *cephObjectBucketInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredCephObjectBucketInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *objectBucketInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&cephrookiov1beta1.ObjectBucket{}, f.defaultInformer)
+func (f *cephObjectBucketInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&cephrookiov1beta1.CephObjectBucket{}, f.defaultInformer)
 }
 
-func (f *objectBucketInformer) Lister() v1beta1.ObjectBucketLister {
-	return v1beta1.NewObjectBucketLister(f.Informer().GetIndexer())
+func (f *cephObjectBucketInformer) Lister() v1beta1.CephObjectBucketLister {
+	return v1beta1.NewCephObjectBucketLister(f.Informer().GetIndexer())
 }

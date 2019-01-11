@@ -24,12 +24,12 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
+	// CephObjectBuckets returns a CephObjectBucketInformer.
+	CephObjectBuckets() CephObjectBucketInformer
 	// Clusters returns a ClusterInformer.
 	Clusters() ClusterInformer
 	// Filesystems returns a FilesystemInformer.
 	Filesystems() FilesystemInformer
-	// ObjectBuckets returns a ObjectBucketInformer.
-	ObjectBuckets() ObjectBucketInformer
 	// ObjectStores returns a ObjectStoreInformer.
 	ObjectStores() ObjectStoreInformer
 	// ObjectStoreUsers returns a ObjectStoreUserInformer.
@@ -49,6 +49,11 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 	return &version{factory: f, namespace: namespace, tweakListOptions: tweakListOptions}
 }
 
+// CephObjectBuckets returns a CephObjectBucketInformer.
+func (v *version) CephObjectBuckets() CephObjectBucketInformer {
+	return &cephObjectBucketInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
 // Clusters returns a ClusterInformer.
 func (v *version) Clusters() ClusterInformer {
 	return &clusterInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
@@ -57,11 +62,6 @@ func (v *version) Clusters() ClusterInformer {
 // Filesystems returns a FilesystemInformer.
 func (v *version) Filesystems() FilesystemInformer {
 	return &filesystemInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ObjectBuckets returns a ObjectBucketInformer.
-func (v *version) ObjectBuckets() ObjectBucketInformer {
-	return &objectBucketInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // ObjectStores returns a ObjectStoreInformer.

@@ -44,19 +44,21 @@ import (
 )
 
 const (
-	rookCephPrefix string = "rook-ceph-object-bucket-"
-	accessKey      string = "AccessKey"
-	secretKey      string = "SecretKey"
+	rookCephPrefix  string = "rook-ceph-object-bucket-"
+	accessKey       string = "AccessKey"
+	secretKey       string = "SecretKey"
+	crdNameSingular string = "cephobjectbucket"
+	crdNamePlural   string = "cephobjectbuckets"
 )
 
 // ObjectBucketResource represent the object store user custom resource for the watcher
 var ObjectBucketResource = opkit.CustomResource{
-	Name:    "cephobjectbucket",
-	Plural:  "cephobjectbuckets",
+	Name:    crdNameSingular,
+	Plural:  crdNamePlural,
 	Group:   cephv1beta1.CustomResourceGroup,
 	Version: cephv1beta1.Version,
 	Scope:   apiextensionsv1beta1.NamespaceScoped,
-	Kind:    reflect.TypeOf(cephv1beta1.ObjectBucket{}).Name(),
+	Kind:    reflect.TypeOf(cephv1beta1.CephObjectBucket{}).Name(),
 }
 
 var logger = capnslog.NewPackageLogger("github.com/rook/rook", "op-object")
@@ -65,7 +67,7 @@ var logger = capnslog.NewPackageLogger("github.com/rook/rook", "op-object")
 type Controller struct {
 	context      *clusterd.Context
 	ownerRef     metav1.OwnerReference
-	bucketLister obListerv1beta1.ObjectBucketLister
+	bucketLister obListerv1beta1.CephObjectBucketLister
 	secretLister listers.SecretLister
 }
 
@@ -77,13 +79,13 @@ func NewObjectBucketController(context *clusterd.Context, ownerRef metav1.OwnerR
 	return &Controller{
 		context:      context,
 		ownerRef:     ownerRef,
-		bucketLister: externalInformerFactory.Ceph().V1beta1().ObjectBuckets().Lister(),
+		bucketLister: externalInformerFactory.Ceph().V1beta1().CephObjectBuckets().Lister(),
 		secretLister: internalInformerFactory.Core().V1().Secrets().Lister(),
 	}
 
 }
 
-// StartWatch watches ObjectBucket custom resources and acts on API events
+// StartWatch watches CephObjectBucket custom resources and acts on API events
 func (c *Controller) StartWatch(stopCh <-chan struct{}) {
 	resourceHandlerFuncs := cache.ResourceEventHandlerFuncs{
 		AddFunc:    c.onAdd,
@@ -94,14 +96,14 @@ func (c *Controller) StartWatch(stopCh <-chan struct{}) {
 	logger.Infof("start watching object bucket resources")
 	watcher := opkit.NewWatcher(ObjectBucketResource, "", resourceHandlerFuncs, c.context.RookClientset.CephV1beta1().RESTClient())
 
-	go watcher.Watch(&cephv1beta1.ObjectBucket{}, stopCh)
+	go watcher.Watch(&cephv1beta1.CephObjectBucket{}, stopCh)
 	return
 }
 
 func (c *Controller) onAdd(obj interface{}) {
 	objectBucket, err := getObjectBucketResource(obj)
 	if err != nil {
-		logger.Errorf("failed to get objectbucket resource: %v", err)
+		logger.Errorf("failed to get CephObjectBucket resource: %v", err)
 		return
 	}
 	c.handleAdd(objectBucket)
@@ -119,7 +121,7 @@ type cephUser struct {
 	name, accessKey, secretKey string
 }
 
-func (c *Controller) handleAdd(ob *cephv1beta1.ObjectBucket) {
+func (c *Controller) handleAdd(ob *cephv1beta1.CephObjectBucket) {
 	var err error
 	// get user and credentials
 	user, err := c.newCephUserFromObjectBucket(ob)
@@ -132,29 +134,29 @@ func (c *Controller) handleAdd(ob *cephv1beta1.ObjectBucket) {
 	logger.Infof("=== DEBUG === %T\n%v", user, user)
 
 	// s3-sdk create bucket with user/creds
-	//createCephBucket(user, ob.Name)
+	// createCephBucket(user, ob.Name)
 
 	// create configMap
 }
 
-func (c *Controller) handleUpdate(ob *cephv1beta1.ObjectBucket) {
+func (c *Controller) handleUpdate(ob *cephv1beta1.CephObjectBucket) {
 	// TODO
 }
 
-func (c *Controller) handleDelete(ob *cephv1beta1.ObjectBucket) {
+func (c *Controller) handleDelete(ob *cephv1beta1.CephObjectBucket) {
 	// TODO
 }
 
-func getObjectBucketResource(obj interface{}) (*cephv1beta1.ObjectBucket, error) {
+func getObjectBucketResource(obj interface{}) (*cephv1beta1.CephObjectBucket, error) {
 	var ok bool
-	objectBucket, ok := obj.(cephv1beta1.ObjectBucket)
-	if ok {
-		return objectBucket.DeepCopy(), nil
+	objectBucket, ok := obj.(cephv1beta1.CephObjectBucket)
+	if !ok {
+		return nil, fmt.Errorf("obj does not match CephObjectBucket type")
 	}
-	return nil, fmt.Errorf("obj does not match ObjectBucket type")
+	return objectBucket.DeepCopy(), nil
 }
 
-func (c *Controller) newCephUserFromObjectBucket(ob *cephv1beta1.ObjectBucket) (*cephUser, error) {
+func (c *Controller) newCephUserFromObjectBucket(ob *cephv1beta1.CephObjectBucket) (*cephUser, error) {
 	var err error
 	cu := &cephUser{}
 
@@ -167,7 +169,7 @@ func (c *Controller) newCephUserFromObjectBucket(ob *cephv1beta1.ObjectBucket) (
 	return cu, nil
 }
 
-func (c *Controller) getObjectBucketUserFromBucket(ob *cephv1beta1.ObjectBucket) (string, error) {
+func (c *Controller) getObjectBucketUserFromBucket(ob *cephv1beta1.CephObjectBucket) (string, error) {
 	user := ob.Spec.ObjectUser
 	if user == "" {
 		return "", fmt.Errorf("ObjectUser is empty, required")
@@ -175,7 +177,7 @@ func (c *Controller) getObjectBucketUserFromBucket(ob *cephv1beta1.ObjectBucket)
 	return user, nil
 }
 
-func (c *Controller) getObectBucketUserCredentials(ob *cephv1beta1.ObjectBucket) (string, string, error) {
+func (c *Controller) getObectBucketUserCredentials(ob *cephv1beta1.CephObjectBucket) (string, string, error) {
 	secret, err := c.getObjectBucketUserSecret(ob.Name, ob.Namespace)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to get user credentials")
@@ -226,7 +228,7 @@ func (c *Controller) getObjectBucketUserSecret(user, namespace string) (*v1.Secr
 // }
 //
 // // TODO
-// func newCephBucketConfigMap(ob *cephv1beta1.ObjectBucket) *v1.ConfigMap {
+// func newCephBucketConfigMap(ob *cephv1beta1.CephObjectBucket) *v1.ConfigMap {
 // 	return &v1.ConfigMap{
 // 		ObjectMeta: metav1.ObjectMeta{
 // 			Name: rookCephPrefix + ob.Name,

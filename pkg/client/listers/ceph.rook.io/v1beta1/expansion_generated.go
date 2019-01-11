@@ -18,6 +18,14 @@ limitations under the License.
 
 package v1beta1
 
+// CephObjectBucketListerExpansion allows custom methods to be added to
+// CephObjectBucketLister.
+type CephObjectBucketListerExpansion interface{}
+
+// CephObjectBucketNamespaceListerExpansion allows custom methods to be added to
+// CephObjectBucketNamespaceLister.
+type CephObjectBucketNamespaceListerExpansion interface{}
+
 // ClusterListerExpansion allows custom methods to be added to
 // ClusterLister.
 type ClusterListerExpansion interface{}
@@ -33,14 +41,6 @@ type FilesystemListerExpansion interface{}
 // FilesystemNamespaceListerExpansion allows custom methods to be added to
 // FilesystemNamespaceLister.
 type FilesystemNamespaceListerExpansion interface{}
-
-// ObjectBucketListerExpansion allows custom methods to be added to
-// ObjectBucketLister.
-type ObjectBucketListerExpansion interface{}
-
-// ObjectBucketNamespaceListerExpansion allows custom methods to be added to
-// ObjectBucketNamespaceLister.
-type ObjectBucketNamespaceListerExpansion interface{}
 
 // ObjectStoreListerExpansion allows custom methods to be added to
 // ObjectStoreLister.

@@ -297,47 +297,47 @@ type GatewaySpec struct {
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ObjectBucket represents a bucket in an object store
-type ObjectBucket struct {
+// CephObjectBucket represents a bucket in an object store
+type CephObjectBucket struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
-	Spec              ObjectBucketSpec   `json:"spec"`
-	Status            ObjectBucketStatus `json:"status"`
+	Spec              CephObjectBucketSpec   `json:"spec"`
+	Status            CephObjectBucketStatus `json:"status"`
 }
 
-// ObjectBucketSpec represents the body of an ObjectBucket
-type ObjectBucketSpec struct {
+// CephObjectBucketSpec represents the body of an CephObjectBucket
+type CephObjectBucketSpec struct {
 	BucketName         string `json:"bucketName,omitempty"`
 	GenerateBucketName string `json:"generateBucketName,omitempty"`
-	ObjectUser         string `json:"rookObjectUser"`
+	ObjectUser         string `json:"cephObjectStoreUser"`
 }
 
-// ObjectBucketPhase represents the possible phases of an ObjectBucket
-type ObjectBucketPhase string
+// CephObjectBucketPhase represents the possible phases of an CephObjectBucket
+type CephObjectBucketPhase string
 
 const (
-	// ObjectBucketPhaseCreating indicates that the operator is processing a new ObjectBucket API object
-	// Until the criteria of ObjectBucketPhaseAvailable has been met, the ObjectBucket is considered
+	// CephObjectBucketPhaseCreating indicates that the operator is processing a new CephObjectBucket API object
+	// Until the criteria of ObjectBucketPhaseAvailable has been met, the CephObjectBucket is considered
 	// "pending"
-	ObjectBucketPhaseCreating ObjectBucketPhase = "pending"
+	CephObjectBucketPhaseCreating CephObjectBucketPhase = "pending"
 
-	// ObjectBucketPhaseAvailable indicates that the operator has finished processing a new ObjectBucket
+	// CephObjectBucketPhaseAvailable indicates that the operator has finished processing a new CephObjectBucket
 	// API object and the bucket is ready for consumption
 	// The criteria for this phase is
 	// - the bucket has been created in the object store
 	// - the bucket data has been written to a the bucket ConfigMap in the respective namespace
-	ObjectBucketPhaseAvailable ObjectBucketPhase = "available"
+	CephObjectBucketPhaseAvailable CephObjectBucketPhase = "available"
 )
 
-type ObjectBucketStatus struct {
-	Phase      ObjectBucketPhase `json:"phase,string,omitempty"`
-	BucketHost string            `json:"bucketHost,omitempty"`
+type CephObjectBucketStatus struct {
+	Phase      CephObjectBucketPhase `json:"phase,string,omitempty"`
+	BucketHost string                `json:"bucketHost,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type ObjectBucketList struct {
+type CephObjectBucketList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
-	Items           []ObjectBucket `json:"items"`
+	Items           []CephObjectBucket `json:"items"`
 }

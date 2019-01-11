@@ -18,11 +18,11 @@ limitations under the License.
 
 package v1beta1
 
+type CephObjectBucketExpansion interface{}
+
 type ClusterExpansion interface{}
 
 type FilesystemExpansion interface{}
-
-type ObjectBucketExpansion interface{}
 
 type ObjectStoreExpansion interface{}
 

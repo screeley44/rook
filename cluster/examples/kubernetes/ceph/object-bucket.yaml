@@ -2,9 +2,9 @@
 kind: CephObjectBucket
 apiVersion: ceph.rook.io/v1beta1
 metadata:
-  name: my-object-bucket
+  name: my-object-bucket1
   namespace: rook-ceph
 spec:
-  objectUser: "my-user"
+  cephObjectStoreUser: "my-user"
   bucketName: "my-bucket"
-  #generateBucketName:
+  # generateBucketName: "prefix"

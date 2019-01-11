@@ -28,16 +28,16 @@ type FakeCephV1beta1 struct {
 	*testing.Fake
 }
 
+func (c *FakeCephV1beta1) CephObjectBuckets(namespace string) v1beta1.CephObjectBucketInterface {
+	return &FakeCephObjectBuckets{c, namespace}
+}
+
 func (c *FakeCephV1beta1) Clusters(namespace string) v1beta1.ClusterInterface {
 	return &FakeClusters{c, namespace}
 }
 
 func (c *FakeCephV1beta1) Filesystems(namespace string) v1beta1.FilesystemInterface {
 	return &FakeFilesystems{c, namespace}
-}
-
-func (c *FakeCephV1beta1) ObjectBuckets(namespace string) v1beta1.ObjectBucketInterface {
-	return &FakeObjectBuckets{c, namespace}
 }
 
 func (c *FakeCephV1beta1) ObjectStores(namespace string) v1beta1.ObjectStoreInterface {
