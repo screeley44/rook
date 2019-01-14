@@ -92,7 +92,6 @@ func (c *Controller) StartWatch(stopCh <-chan struct{}) {
 		UpdateFunc: c.onUpdate,
 		DeleteFunc: c.onDelete,
 	}
-
 	logger.Infof("start watching object bucket resources")
 	watcher := opkit.NewWatcher(ObjectBucketResource, "", resourceHandlerFuncs, c.context.RookClientset.CephV1beta1().RESTClient())
 
@@ -129,9 +128,7 @@ func (c *Controller) handleAdd(ob *cephv1beta1.CephObjectBucket) {
 		logger.Errorf("failed to retrieve ceph user: %v", err)
 		return
 	}
-
-	// DEBUG
-	logger.Infof("=== DEBUG === %T\n%v", user, user)
+	var _ = user
 
 	// s3-sdk create bucket with user/creds
 	// createCephBucket(user, ob.Name)
@@ -149,9 +146,9 @@ func (c *Controller) handleDelete(ob *cephv1beta1.CephObjectBucket) {
 
 func getObjectBucketResource(obj interface{}) (*cephv1beta1.CephObjectBucket, error) {
 	var ok bool
-	objectBucket, ok := obj.(cephv1beta1.CephObjectBucket)
+	objectBucket, ok := obj.(*cephv1beta1.CephObjectBucket)
 	if !ok {
-		return nil, fmt.Errorf("obj does not match CephObjectBucket type")
+		return nil, fmt.Errorf("not a known cephobjectbucket object: %+v", obj)
 	}
 	return objectBucket.DeepCopy(), nil
 }
