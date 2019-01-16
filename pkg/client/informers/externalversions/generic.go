@@ -114,6 +114,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Nfs().V1alpha1().NFSServers().Informer()}, nil
 
 		// Group=rook.io, Version=v1alpha2
+	case v1alpha2.SchemeGroupVersion.WithResource("objectbucketclaims"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Rook().V1alpha2().ObjectBucketClaims().Informer()}, nil
 	case v1alpha2.SchemeGroupVersion.WithResource("volumes"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Rook().V1alpha2().Volumes().Informer()}, nil
 

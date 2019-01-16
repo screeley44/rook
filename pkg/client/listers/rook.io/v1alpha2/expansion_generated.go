@@ -18,6 +18,14 @@ limitations under the License.
 
 package v1alpha2
 
+// ObjectBucketClaimListerExpansion allows custom methods to be added to
+// ObjectBucketClaimLister.
+type ObjectBucketClaimListerExpansion interface{}
+
+// ObjectBucketClaimNamespaceListerExpansion allows custom methods to be added to
+// ObjectBucketClaimNamespaceLister.
+type ObjectBucketClaimNamespaceListerExpansion interface{}
+
 // VolumeListerExpansion allows custom methods to be added to
 // VolumeLister.
 type VolumeListerExpansion interface{}

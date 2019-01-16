@@ -28,6 +28,10 @@ type FakeRookV1alpha2 struct {
 	*testing.Fake
 }
 
+func (c *FakeRookV1alpha2) ObjectBucketClaims(namespace string) v1alpha2.ObjectBucketClaimInterface {
+	return &FakeObjectBucketClaims{c, namespace}
+}
+
 func (c *FakeRookV1alpha2) Volumes(namespace string) v1alpha2.VolumeInterface {
 	return &FakeVolumes{c, namespace}
 }

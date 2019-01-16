@@ -141,7 +141,7 @@ type ObjectBucketClaimSpec struct {
 	StorageClassName string `json:"storageClassName"`
 }
 
-// +k8s:deepcopygen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 type ObjectBucketClaimList struct {
 	metav1.TypeMeta `json:",inline"`

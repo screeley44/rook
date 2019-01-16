@@ -27,12 +27,17 @@ import (
 
 type RookV1alpha2Interface interface {
 	RESTClient() rest.Interface
+	ObjectBucketClaimsGetter
 	VolumesGetter
 }
 
 // RookV1alpha2Client is used to interact with features provided by the rook.io group.
 type RookV1alpha2Client struct {
 	restClient rest.Interface
+}
+
+func (c *RookV1alpha2Client) ObjectBucketClaims(namespace string) ObjectBucketClaimInterface {
+	return newObjectBucketClaims(c, namespace)
 }
 
 func (c *RookV1alpha2Client) Volumes(namespace string) VolumeInterface {
