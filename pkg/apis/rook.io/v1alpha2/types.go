@@ -122,3 +122,29 @@ type VolumeList struct {
 	metav1.ListMeta `json:"metadata"`
 	Items           []Volume `json:"items"`
 }
+
+// +genclient
+// +genclient:noStatus
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// ObjectBucketClaim represents a bucket in an object store
+type ObjectBucketClaim struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              ObjectBucketClaimSpec   `json:"spec"`
+}
+
+// ObjectBucketClaimSpec represents the body of an ObjectBucketClaim
+type ObjectBucketClaimSpec struct {
+	GenerateBucketName string `json:"generateBucketName"`
+	SecretName string `json:"secretName"`
+	StorageClassName string `json:"storageClassName"`
+}
+
+// +k8s:deepcopygen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type ObjectBucketClaimList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []ObjectBucketClaim `json:"items"`
+}
