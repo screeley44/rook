@@ -26,6 +26,7 @@ import (
 	"github.com/rook/rook/cmd/rook/nfs"
 	rook "github.com/rook/rook/cmd/rook/rook"
 	"github.com/rook/rook/cmd/rook/version"
+	"github.com/rook/rook/cmd/rook/objectbucketclaim"
 )
 
 func main() {
@@ -44,6 +45,7 @@ func addCommands() {
 	rook.RootCmd.AddCommand(edgefs.Cmd)
 	rook.RootCmd.AddCommand(nfs.Cmd)
 	rook.RootCmd.AddCommand(cassandra.Cmd)
+	rook.RootCmd.AddCommand(objectbucketclaim.Cmd)
 
 	// add the ceph legacy commands to the main command for backwards compatibility
 	// TODO: remove these Ceph legacy commands in the future
