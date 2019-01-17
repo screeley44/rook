@@ -44,6 +44,8 @@ nfs.%:
 cassandra.%:
 	@$(MAKE) -C cassandra PLATFORM=$*
 
+objectbucketclaim.%:
+	@$(MAKE) -C objectbucketclaim PLATFORM=$*
 
 do.build.images.%: $(foreach i,$(IMAGES), $(i).%);
 

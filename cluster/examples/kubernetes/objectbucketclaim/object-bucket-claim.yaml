@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: object-bucket-claim-user
+---
+kind: ObjectBucketClaim
+apiVersion: rook.io/v1alpha2
+metadata:
+  name: my-object-bucket1
+  namespace: object-bucket-claim-user
+spec:
+  secretName: "my-user"
+  storageClassName: "some-sc"
+  generateBucketName: "prefix"

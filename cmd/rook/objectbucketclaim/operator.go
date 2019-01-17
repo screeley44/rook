@@ -26,8 +26,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const containerName = "rook-object-bucket-claim-operator"
-
 var operatorCmd = &cobra.Command{
 	Use:   "operator",
 	Short: "start ObjectBucketClaim operator",

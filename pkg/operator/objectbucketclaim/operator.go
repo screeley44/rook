@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package nfs operator to manage NFS Server.
+// Package objectbucketclaim operator bucket provisioning
 package objectbucketclaim
 
 import (
@@ -27,7 +27,7 @@ import (
 
 const allNamespaces = ""
 
-// Operator type for managing NFS Server.
+// Operator type for managing bucket provisioner Server.
 type Operator struct {
 	context        *clusterd.Context
 	containerImage string
@@ -50,9 +50,9 @@ func (o *Operator) Run() error {
 	stopChan := make(chan struct{})
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Watch for changes to the nfs server.
+	// Start handling object bucket claim events
 	o.controller.StartWatch(allNamespaces, stopChan)
-	logger.Infof("Started watch for NFS Servers")
+	logger.Infof("Started watch for objectBucketClaims")
 
 	for {
 		select {

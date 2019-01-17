@@ -1,0 +1,92 @@
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: objectbucketclaims.rook.io
+spec:
+  group: rook.io
+  names:
+    kind: ObjectBucketClaim
+    listKind: ObjectBucketClaimList
+    singular: objectbucketclaim
+    plural: objectbucketclaims
+  scope: Namespaced
+  version: v1alpha2
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rook-object-bucket-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-object-bucket-operator
+  namespace: rook-object-bucket-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: rook-object-bucket-operator
+  namespace: rook-object-bucket-system
+rules:
+- apiGroups:
+    - ""
+  resources:
+    - secrets
+    - services
+  verbs:
+    - get
+    - watch
+    - list
+- apiGroups:
+    - ""
+  resources:
+    - configMaps
+  verbs:
+    - "*"
+- apiGroups:
+    - rook.io
+  resources:
+    - objectbucketclaims
+  verbs:
+    - "*"
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-object-bucket-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-object-bucket-operator
+subjects:
+  - kind: ServiceAccount
+    name: rook-object-bucket-operator
+    namespace: rook-object-bucket-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rook-object-bucket-operator
+  namespace: rook-object-bucket-system
+  labels:
+    app: rook-object-bucket-operator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: rook-object-bucket-operator
+      labels:
+        app: rook-object-bucket-operator
+    spec:
+      serviceAccountName: rook-object-bucket-operator
+      containers:
+        - name: rook-object-bucket-operator
+          image: jcoperh/objectbucketclaim-amd64
+          imagePullPolicy: IfNotPresent
+          args: ["objectbucketclaim", "operator"]
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rook-object-bucket-operator
