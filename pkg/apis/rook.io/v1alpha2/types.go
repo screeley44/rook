@@ -131,14 +131,14 @@ type VolumeList struct {
 type ObjectBucketClaim struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
-	Spec              ObjectBucketClaimSpec   `json:"spec"`
+	Spec              ObjectBucketClaimSpec `json:"spec"`
 }
 
 // ObjectBucketClaimSpec represents the body of an ObjectBucketClaim
 type ObjectBucketClaimSpec struct {
 	GenerateBucketName string `json:"generateBucketName"`
-	SecretName string `json:"secretName"`
-	StorageClassName string `json:"storageClassName"`
+	SecretName         string `json:"secretName"`
+	StorageClassName   string `json:"storageClassName"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -114,7 +114,6 @@ func (c *Controller) onDelete(obj interface{}) {
 	// TODO
 }
 
-
 // TODO scrap this
 type cephUser struct {
 	name, accessKey, secretKey string

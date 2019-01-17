@@ -24,9 +24,9 @@ import (
 	"github.com/rook/rook/cmd/rook/edgefs"
 	"github.com/rook/rook/cmd/rook/minio"
 	"github.com/rook/rook/cmd/rook/nfs"
+	"github.com/rook/rook/cmd/rook/objectbucketclaim"
 	rook "github.com/rook/rook/cmd/rook/rook"
 	"github.com/rook/rook/cmd/rook/version"
-	"github.com/rook/rook/cmd/rook/objectbucketclaim"
 )
 
 func main() {
