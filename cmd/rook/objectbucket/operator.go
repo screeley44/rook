@@ -13,17 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package objectbucketclaim
+package objectbucket
 
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/rook/rook/cmd/rook/rook"
 	"github.com/rook/rook/pkg/clusterd"
 	"github.com/rook/rook/pkg/operator/k8sutil"
-	operator "github.com/rook/rook/pkg/operator/objectbucketclaim"
+	operator "github.com/rook/rook/pkg/operator/objectbucket"
 	"github.com/rook/rook/pkg/util/flags"
-	"github.com/spf13/cobra"
 )
 
 var operatorCmd = &cobra.Command{

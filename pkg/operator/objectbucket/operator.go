@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 // Package objectbucketclaim operator bucket provisioning
-package objectbucketclaim
+package objectbucket
 
 import (
 	"os"

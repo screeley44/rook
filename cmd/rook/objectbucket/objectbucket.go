@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package objectbucketclaim
+package objectbucket
 
 import (
 	"github.com/coreos/pkg/capnslog"
@@ -31,7 +31,7 @@ var Cmd = &cobra.Command{
 }
 
 var (
-	logger = capnslog.NewPackageLogger("github.com/rook/rook", "objectbucketclaim-cmd")
+	logger = capnslog.NewPackageLogger("github.com/rook/rook", "object-bucket-cmd")
 )
 
 func init() {
