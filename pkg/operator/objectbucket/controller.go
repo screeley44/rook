@@ -175,23 +175,23 @@ func createBucket(bucketName, accessKey, secretKey string) error {
 	})
 	logger.Infof("bucket creation output: %v", output)
 	if err != nil {
-		return fmt.Errorf("failed creating bucket %q", bucketName, err)
+		return fmt.Errorf("failed creating bucket %q: %v", bucketName, err)
 	}
 	return nil
 }
 
 //
 // // TODO
-func newCephBucketConfigMap() *v1.ConfigMap {
-	return &v1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: rookCephPrefix + ob.Name,
-		},
-		Data: map[string]string{
-			"BUCKET_HOST": "",
-			"BUCKET_PORT": "",
-			"BUCKET_NAME": "",
-			"BUCKET_SSL":  "",
-		},
-	}
-}
+// func newBucketConfigMap() *v1.ConfigMap {
+// 	return &v1.ConfigMap{
+// 		ObjectMeta: metav1.ObjectMeta{
+// 			Name: rookPrefix + ob.Name,
+// 		},
+// 		Data: map[string]string{
+// 			"BUCKET_HOST": "",
+// 			"BUCKET_PORT": "",
+// 			"BUCKET_NAME": "",
+// 			"BUCKET_SSL":  "",
+// 		},
+// 	}
+// }
